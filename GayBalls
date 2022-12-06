@@ -1,0 +1,341 @@
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+if getgenv().Activated == true then -- desactivates old script, not mine system.
+	pcall(function()
+		getgenv().Connections.Input_Began:Disconnect()
+		getgenv().Connections.Stepped_RunService:Disconnect()
+		getgenv().Connections.Staff_Notification:Disconnect()
+		getgenv().Connections.Player_Notification:Disconnect()
+	end)
+end
+getgenv().Activated = true
+
+getgenv().Connections = {
+	Input_Began = nil,
+	Stepped_RunService = nil,
+	Staff_Notification = nil,
+	Player_Notification = nil,
+}
+-- TOGGEABLES --
+getgenv().Toggles = {
+    InfCola  = false;
+    NoDunce  = false;
+	GodMode  = false;
+	NoTrail  = false;
+	AutoCola = false;
+	MD = false;
+	IW = false;
+	InfAdrenaline = false;
+	NoAdrenalineCooldown = false;
+	CC = false;
+	InfGrappler = false;
+	InfWallClimb = false;
+	fastGrapple = false;
+	infglide = false;
+	padesp = false;
+	ws = false;
+	sp = false;
+	af = false;
+}
+getgenv().BagRarity = "Rare"
+getgenv().AntiCheat = {
+	BanRemotes = {
+		"LoadString",
+		"HighCombo",
+		"FF",
+		"SubmitCombo",
+		"UpdateCombo",
+		"LowCombo",
+		"FinishTimeTrial",
+		"UpdateDunceList",
+	},
+	Remotes = {},
+}
+local bags_rarity = { -- there are more bags on the halloween update, too lazy :D
+	"Legendary";
+	"Epic";
+	"Rare";
+	"Common";
+	"Uncommon";
+	"Random";
+}
+getgenv().BAGESP = false
+getgenv().Other = {
+	Stimmed = false,
+	CanZipline = true,
+}
+getgenv().ATT = false;
+getgenv().Sliders = {
+	CL = 1;
+	ws = 1;
+	sp = 1;
+}
+getgenv().TS = 5;
+local client = game.Players.LocalPlayer
+
+
+
+local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
+GUI:Notification{
+	Title = "Alert",
+	Text = "The owner Likes Watching Hardcode BlackMen Twerking",
+	Duration = 3,
+	Callback = function() end
+}
+wait(2)
+local GUI = Mercury:Create{
+    Name = "Parkour Modded",
+    Size = UDim2.fromOffset(600, 400),
+    Theme = Mercury.Themes.Dark,
+    Link = "https://github.com/deeeity/mercury-lib"
+}
+
+local Tab = GUI:Tab{
+	Name = "Main",
+	Icon = "rbxassetid://8569322835"
+}
+local Tab2 = GUI:Tab{
+	Name = "Misc",
+	Icon = "rbxassetid://8569322835"
+}
+
+Tab:Toggle{
+	Name = "Modify Combo",
+	StartingState = false,
+	Description = "Set Combo",
+	Callback = function(v) 
+		getgenv().Toggles.CL = v
+	end
+}
+Tab:Slider{
+	Name = "Combo Level",
+	Default = 0,
+	Min = 1,
+	Max = 10,
+	Callback = function(v) 
+		getgenv().Sliders.CL = v
+	end
+}
+Tab2:Toggle{
+	Name = "Inf MagDash",
+	StartingState = false,
+	Description = nil,
+	Callback = function(v) 
+		getgenv().Toggles.MD = v
+	end
+}
+Tab2:Toggle{
+	Name = "Inf Cola",
+	StartingState = false,
+	Description = nil,
+	Callback = function(v)
+		getgenv().Toggles.InfCola = v
+	end
+}
+
+
+
+
+
+local Points_Script = Player.PlayerScripts.Points
+local Points_Env = getsenv(Points_Script)
+local Points_EnvIM = rawget(getrawmetatable(Points_Env), "__index")
+local Points_Func = rawget(rawget(Points_EnvIM, "shared"), "triggerPointsFunction")
+
+local GMT = getrawmetatable(game)
+setreadonly(GMT, false)
+local OLD = GMT.__namecall
+
+if Points_Func and type(Points_Func) == 'function' then
+	local FuncTable
+	for _, Table in pairs(debug.getupvalues(Points_Func)) do
+		if type(Table) == 'table' and rawget(Table, 'parkour') and rawget(Table, 'statAdd') and rawget(Table, 'missionTrigger') then
+			FuncTable = Table
+			break
+		end
+	end
+
+	if FuncTable then
+		for Name, Func in pairs(FuncTable) do
+			for _, Remote in pairs(debug.getupvalues(Func)) do
+				if Remote.ClassName == 'RemoteEvent' then
+					getgenv().AntiCheat.Remotes[Name] = Remote
+					break
+				end
+			end
+		end
+	end
+end
+
+GMT.__namecall = newcclosure(function(self, ...)
+	local Method = getnamecallmethod()
+
+	if Method == "FireServer" and table.find(getgenv().AntiCheat.BanRemotes, self.Name) then
+		return nil
+	elseif Method == "InvokeServer" and table.find(getgenv().AntiCheat.BanRemotes, self.Name) then
+		return nil
+	elseif Method == "FireServer" and self == getgenv().AntiCheat.Remotes.statAdd then
+		return nil
+	elseif Method == "FireServer" and self.Name == "SetTrail" and getgenv().Toggles.NoTrail == true then 
+		return nil
+	elseif Method == "TakeDamage" and self.ClassName and getgenv().Toggles.GodMode == true then
+		return nil 
+	end
+
+	return OLD(self, ...)
+end)
+
+
+
+local plrs = game:GetService('Players')
+local rp   = game:GetService('ReplicatedStorage')
+local vim  = game:GetService('VirtualInputManager')
+local rs   = game:GetService("RunService")
+
+local players           = game:GetService("Players");
+local replicatedStorage = game:GetService("ReplicatedStorage");
+local scriptContext     = game:GetService("ScriptContext");
+local client            = players.LocalPlayer;
+
+-- local vars --
+local lp       = plrs.LocalPlayer
+local name     = lp.Name
+local Players  = plrs
+local plr      = lp
+local gong = false;
+
+local Camera   = game.Workspace.CurrentCamera 
+client = game.Players.LocalPlayer
+
+getgenv().alive = false;
+
+
+getgenv().Connections.Stepped_RunService = game:GetService("RunService").Stepped:Connect(function()
+	if Player.Character:FindFirstChild("Humanoid") and game.Players.LocalPlayer.Backpack:FindFirstChild("Main") then
+		getgenv().alive = true
+		-- BINDS
+		local colabind     = game:GetService("ReplicatedStorage").PlayerData[name].Settings.Keybinds.Cola
+		-- LOCAL
+		local char = lp.Character
+
+		local main = game.Players.LocalPlayer.Backpack:WaitForChild("Main") -- Script where u find every single local variable.
+
+		local general = getupvalue(getsenv(main).charJump, 1); -- Table where are basic and general variables.
+		local ammo = getupvalue(getsenv(main).resetAmmo, 1); -- Table where are important and basic AMMO data.
+        local mainEnv = getsenv(main);
+        encrypt = function(str)
+            local _, res = pcall(mainEnv.encrypt, str);
+            return res;
+        end;
+
+		if getgenv().Toggles.InfCola then
+			general.lastDrink = 0; -- resets all the cola things.
+		end 
+		if getgenv().Toggles.MD then
+			general.lastMagSlap = 0; -- resets magdash.
+		end 
+		if getgenv().Toggles.NoDunce == true then -- this should stop client-side dunce.
+			local Shares = getrenv().shared
+			Shares.dunces[Player.Name] = false
+		end
+		if getgenv().Toggles.IW == true then -- all upvalues of wallruns
+			general.recentWallruns = 0
+			general.lastWR = 0
+			general.maxWallrun = math.huge
+			general.numWallrun = math.huge
+		end
+		if getgenv().Toggles.CC == true then  -- removing charge cooldown
+			general.chargeCooldown = 0
+		else
+			general.chargeCooldown = 2
+		end
+
+		if getgenv().Toggles.ws == true then
+			general.walkspeedMult = getgenv().Sliders.ws
+		else
+			general.walkspeedMult = 1
+		end
+		if getgenv().Toggles.sp == true then
+			general.slidespeed  = getgenv().Sliders.sp
+		end
+		if getgenv().Toggles.InfGrappler then 
+			ammo.canGrapple = true -- inf grappler
+		end
+		if getgenv().Toggles.InfWallClimb then
+			ammo.numWallclimb = 2 -- inf wallclimbboost
+		end
+		if  getgenv().Toggles.fastGrapple then
+			general.grappling = false
+		end
+		if  getgenv().Toggles.infglide then
+			ammo.glideStamina = 1
+		end
+		if getgenv().Toggles.af then
+			general.flowActive = true;
+			general.flowDelta = 100;
+		end
+		if getgenv().Toggles.autosell and game:GetService("ReplicatedStorage").PlayerData.LocalPlayer.Generic.Points.Value > 10000 then
+			local Event = game:GetService("ReplicatedStorage").Reset
+			Event:InvokeServer()
+		end	
+		if getgenv().Toggles.CL == true then
+			general.comboTime = 1000
+			general.comboHealth = 100
+		    general.comboXp = 1
+			general.comboLevel = getgenv().Sliders.CL
+		end
+		if getgenv().Toggles.AutoCola then
+			-- IMPORTANT --
+			local humanoid = char.Humanoid
+			local health = humanoid.Health
+	
+			-- Auto Cola
+			if  health >= 1 and true then
+				if health < 100 then
+					vim:SendKeyEvent(true, colabind.Value, false, game)
+				end
+			end
+		end
+	else
+		getgenv().alive = false
+		getgenv().Other.Stimmed = false 
+	end
+end)
+
+UserInputService = game:GetService('UserInputService')
+getgenv().Connections.Input_Began = UserInputService.InputBegan:Connect(function(Input, Game_Processed)
+	local main = game.Players.LocalPlayer.Backpack:WaitForChild("Main") -- Script where u find every single local variable.
+
+	local general = getupvalue(getsenv(main).resetAmmo, 1);
+	local Back_Gear_Key = Player.PlayerGui.NewUI.Windows.Keybinds.Window.UseKit.Binding -- gets the specific bind of the gear
+
+	if Input.KeyCode == Enum.KeyCode[Back_Gear_Key.Text] and not Game_Processed then
+		if getgenv().Toggles.InfAdrenaline == false then 
+			getgenv().Other.Stimmed = false
+			return 
+		else
+			if getgenv().Other.Stimmed == true then
+				-- Unstim
+				getgenv().Other.Stimmed = false
+				if getgenv().Toggles.NoAdrenalineCooldown then -- this is to stop the 30 seconds cooldown of the adrenaline
+					general.adrenalineCooldown = 0.3
+				else
+					general.adrenalineCooldown = 30
+				end
+			elseif getgenv().Other.Stimmed == false then
+				-- Stim
+				getgenv().Other.Stimmed = true
+				task.wait(.2) -- Wait a tiny second for the animiation to play
+				general.adrenalineCooldown = math.huge
+			end
+		end
+	end   
+end)
+
+spawn(function()
+	while wait(1) do -- esp
+		for i,v in pairs(workspace:GetChildren()) do
+			addtoplayer(v)
+		end
+	end	
+end)
