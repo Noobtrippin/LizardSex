@@ -76,18 +76,20 @@ local client = game.Players.LocalPlayer
 
 
 local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
-GUI:Notification{
-	Title = "Alert",
-	Text = "The owner Likes Watching Hardcode BlackMen Twerking",
-	Duration = 3,
-	Callback = function() end
-}
-wait(2)
+
+
 local GUI = Mercury:Create{
     Name = "Parkour Modded",
     Size = UDim2.fromOffset(600, 400),
     Theme = Mercury.Themes.Dark,
     Link = "https://github.com/deeeity/mercury-lib"
+}
+
+GUI:Notification{
+	Title = "Alert",
+	Text = "The owner Likes Watching Hardcode BlackMen Twerking",
+	Duration = 3,
+	Callback = function() end
 }
 
 local Tab = GUI:Tab{
